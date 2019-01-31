@@ -18,15 +18,14 @@ def output_message():
     else:
         return ''
 
-
-async def handler1(request):
+async def text_handler(request):
     input = await request.json()
     response = web.Response(content_type='text/html')
     channel.basic_publish(exchange='', routing_key='input', body=json.dumps(input))
     response.text = "Message was successfully queued.\n"
     return response
 
-async def handler2(request):
+async def get_graph(request):
     result_str = output_message()
     if result_str:
         response = web.Response(content_type='application/json')
@@ -35,7 +34,6 @@ async def handler2(request):
         response = web.Response(content_type='text/html')
         response.text = 'The queue is empty!\n'
     return response
-
 
 async def init(loop):
     handler = app.make_handler()
@@ -46,8 +44,8 @@ async def init(loop):
 
 loop = asyncio.get_event_loop()
 app = web.Application()
-app.router.add_post('/text', handler1)
-app.router.add_get('/result', handler2)
+app.router.add_post('/text', text_handler)
+app.router.add_get('/result', get_graph)
 loop.run_until_complete(init(loop))
 
 if __name__ == '__main__':

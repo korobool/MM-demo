@@ -1,3 +1,0 @@
-curl -H "Content-Type: application/json" -X POST -d '{"text": ["abc erty", "sent2", "cba dfd"]}' http://0.0.0.0:8080/text
-
-curl http://0.0.0.0:8080/result
