@@ -17,5 +17,5 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": ["abc erty", "sent
 ```
 For result receiving:
 ```
-curl http://0.0.0.0:8080/result
+curl http://localhost:8080/result
 ```
