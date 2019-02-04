@@ -15,6 +15,9 @@ For text sending:
 ```
 curl -H "Content-Type: application/json" -X POST -d '{"text": ["abc erty", "sent2", "cba dfd"]}' http://0.0.0.0:8080/text
 ```
+```
+curl -H "Content-Type: application/json" -X POST -d '{"text": "The United States of America is a federal republic consisting of 50 states, a federal district (Washington, D.C., the capital city of the United States), five major territories, and various minor islands. The 48 contiguous states and Washington, D.C., are in central North America between Canada and Mexico; the two other states, Alaska and Hawaii, are in the northwestern part of North America and an archipelago in the mid-Pacific, respectively, while the territories are scattered throughout the Pacific Ocean and the Caribbean Sea."}' http://localhost:8080/text
+```
 For result receiving:
 ```
 curl http://localhost:8080/result
