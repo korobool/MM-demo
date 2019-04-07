@@ -2,6 +2,7 @@ import json
 import pika
 import asyncio
 import aiohttp
+import random
 
 from aiohttp import web
 
@@ -23,20 +24,32 @@ async def text_handler(request):
     response = web.Response(content_type='text/html')
     channel.basic_publish(exchange='', routing_key='input', body=json.dumps(input))
     response.text = "Message was successfully queued.\n"
+    """
+    input = await request.json()
+    print(input)
+    response = web.Response(content_type='text/html')
+    response.text = "Message was successfully queued.\n"
+    """
     return response
 
 async def get_graph(request):
     result_str = output_message()
     if result_str:
         response = web.Response(content_type='application/json')
+        print(result_str)
         response.text = json.dumps(result_str)
     else:
-        response = web.Response(content_type='text/html')
-        response.text = 'The queue is empty!\n'
+        response = web.Response(content_type='application/json')
+        response.text = json.dumps({'text': 'The queue is empty!'})
+    """
+    response = web.Response(content_type='application/json')
+    response.text = json.dumps({'tree': ["The queue is empty!", str(random.random())]})
+    """
     return response
 
 async def application(request):
-    return web.FileResponse('../static/templates/index.html')
+    return web.FileResponse('../static/index.html')
+
 
 async def init(loop):
     handler = app.make_handler()
@@ -50,6 +63,7 @@ app = web.Application()
 app.router.add_post('/text', text_handler)
 app.router.add_get('/result', get_graph)
 app.router.add_get('/app', application)
+app.router.add_static('/', path='../static')
 loop.run_until_complete(init(loop))
 
 if __name__ == '__main__':
