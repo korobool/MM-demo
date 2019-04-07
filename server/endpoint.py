@@ -35,6 +35,9 @@ async def get_graph(request):
         response.text = 'The queue is empty!\n'
     return response
 
+async def application(request):
+    return web.FileResponse('../static/templates/index.html')
+
 async def init(loop):
     handler = app.make_handler()
     srv = await loop.create_server(handler, '0.0.0.0', 8080)
@@ -46,6 +49,7 @@ loop = asyncio.get_event_loop()
 app = web.Application()
 app.router.add_post('/text', text_handler)
 app.router.add_get('/result', get_graph)
+app.router.add_get('/app', application)
 loop.run_until_complete(init(loop))
 
 if __name__ == '__main__':

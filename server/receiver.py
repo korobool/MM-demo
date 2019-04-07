@@ -5,22 +5,33 @@ import sys
 
 sys.path.append('../')
 
-from analyzer.weights import WeightedListAnalyzer
+from analyzer.weights import NodesBertScoring
+from analyzer.weights import EntityNodesFinder
 from analyzer.graph import MMGraphAnalyzer
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
 channel.queue_declare(queue='input')
 channel.queue_declare(queue='output')
-weights_analyzer = WeightedListAnalyzer()
+nodes_finder = EntityNodesFinder()
+weights_analyzer = NodesBertScoring()
 graph_analyzer = MMGraphAnalyzer()
 
 
 def preprocess(data):
     data = json.loads(data.decode("utf-8"))
     # data['text'].append(str(len(data['text'])))
-    result = json.dumps(weights_analyzer.analyze(data['text']))
-    result = json.dumps(graph_analyzer.analyze(data['text'], result))
+    nodes_finder.preprocess(data['text'])
+    weights_analyzer.analyze(data['text'],
+                             nodes_finder.all_tokens,
+                             nodes_finder.all_ners,
+                             nodes_finder.all_nps)
+    graph_analyzer.analyze(weights_analyzer.weight_average)
+    print(graph_analyzer.tree)
+    print('---')
+    # result = '{}'
+    # result = json.dumps(weights_analyzer.analyze(data['text']))
+    result = json.dumps(graph_analyzer.tree)
     channel.basic_publish(exchange='', routing_key='output', body=result)
 
 
